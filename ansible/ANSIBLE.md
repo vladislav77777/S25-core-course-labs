@@ -211,7 +211,7 @@ changed: [yandex_instance_1]
 user@HonorVladisLove:/mnt/c/...$ ssh ubuntu@89.169.158.227
 ```
 
-### **📋 Output:**
+### **📋 VM:**
 
 ```bash
 > ubuntu@fhm7p44s09ksonkmg1n5:~$ docker --version
@@ -265,4 +265,169 @@ Docker Compose version v2.32.4
 @all:
   |--@ungrouped:
   |  |--yandex_instance_1
+```
+
+## Lab 6 Output
+
+### **📌 Command:**
+
+```bash
+> ansible-playbook -i ansible/inventory/default_yandex_cloud.yml ansible/playbooks/dev/app_python/main.yml
+```
+
+### **📋 Output:**
+
+```text
+PLAY [Deploying Python Moscow Time App] ****************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [yandex_instance_1]
+
+TASK [docker : Install Docker dependencies] ************************************
+ok: [yandex_instance_1]
+
+TASK [docker : Create keyrings directory] **************************************
+ok: [yandex_instance_1]
+
+TASK [docker : Add Docker's official GPG key] **********************************
+ok: [yandex_instance_1]
+
+TASK [docker : Set up the Docker repository] ***********************************
+ok: [yandex_instance_1]
+
+TASK [docker : Install Docker using official installation script] **************
+ok: [yandex_instance_1]
+
+TASK [docker : Download Docker Compose] ****************************************
+changed: [yandex_instance_1]
+
+TASK [docker : Verify installation] ********************************************
+ok: [yandex_instance_1]
+
+TASK [docker : Ensure docker group exists] *************************************
+ok: [yandex_instance_1]
+
+TASK [docker : Add current user to the docker group] ***************************
+ok: [yandex_instance_1]
+
+TASK [docker : Secure Docker Configuration - Disable Root Access] **************
+ok: [yandex_instance_1]
+
+TASK [web_app : Deploying our application] *************************************
+included: /mnt/c/Users/Vladi/PycharmProjects/S25-core-course-labs/ansible/roles/web_app/tasks/deploy_web_app.yml for yandex_instance_1
+
+TASK [web_app : Pull Docker image] *********************************************
+changed: [yandex_instance_1]
+
+TASK [web_app : Start container] ***********************************************
+changed: [yandex_instance_1]
+
+TASK [web_app : Create directory for docker-compose file] **********************
+changed: [yandex_instance_1]
+
+TASK [web_app : Deploy docker-compose file] ************************************
+changed: [yandex_instance_1]
+
+TASK [web_app : Remove container] **********************************************
+skipping: [yandex_instance_1]
+
+TASK [web_app : Remove docker-compose file] ************************************
+skipping: [yandex_instance_1]
+
+PLAY RECAP *********************************************************************
+yandex_instance_1          : ok=16   changed=5    unreachable=0    failed=0
+   skipped=2    rescued=0    ignored=0
+```
+
+
+### **📌 Command:**
+
+```bash
+> ansible-playbook -i ansible/inventory/default_yandex_cloud.yml ansible/playbooks/dev/app_javascript/main.yml
+```
+
+### **📋 Output:**
+
+```text
+PLAY [Deploying Javascript App] ************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [yandex_instance_1]
+
+TASK [docker : Install Docker dependencies] ************************************
+ok: [yandex_instance_1]
+
+TASK [docker : Create keyrings directory] **************************************
+ok: [yandex_instance_1]
+
+TASK [docker : Add Docker's official GPG key] **********************************
+ok: [yandex_instance_1]
+
+TASK [docker : Set up the Docker repository] ***********************************
+ok: [yandex_instance_1]
+
+TASK [docker : Install Docker using official installation script] **************
+ok: [yandex_instance_1]
+
+TASK [docker : Download Docker Compose] ****************************************
+ok: [yandex_instance_1]
+
+TASK [docker : Verify installation] ********************************************
+ok: [yandex_instance_1]
+
+TASK [docker : Ensure docker group exists] *************************************
+ok: [yandex_instance_1]
+
+TASK [docker : Add current user to the docker group] ***************************
+ok: [yandex_instance_1]
+
+TASK [docker : Secure Docker Configuration - Disable Root Access] **************
+ok: [yandex_instance_1]
+
+TASK [web_app : Deploying our application] *************************************
+included: /mnt/c/Users/Vladi/PycharmProjects/S25-core-course-labs/ansible/roles/web_app/tasks/deploy_web_app.yml for yandex_instance_1
+
+TASK [web_app : Pull Docker image] *********************************************
+changed: [yandex_instance_1]
+
+TASK [web_app : Start container] ***********************************************
+changed: [yandex_instance_1]
+
+TASK [web_app : Create directory for docker-compose file] **********************
+ok: [yandex_instance_1]
+
+TASK [web_app : Deploy docker-compose file] ************************************
+changed: [yandex_instance_1]
+
+TASK [web_app : Remove container] **********************************************
+skipping: [yandex_instance_1]
+
+TASK [web_app : Remove docker-compose file] ************************************
+skipping: [yandex_instance_1]
+
+PLAY RECAP *********************************************************************
+yandex_instance_1          : ok=16   changed=3    unreachable=0    failed=0
+   skipped=2    rescued=0    ignored=0
+```
+
+
+### **❗ Check installation:**
+
+```bash
+user@HonorVladisLove:/mnt/c/...$ ssh -i ~/.ssh/id_rsa ubuntu@89.169.155.240
+```
+
+### **📋 VM:**
+
+```bash
+> ubuntu@fhm7p44s09ksonkmg1n5:~$ docker --version
+Docker version 27.5.1, build 9f9e405
+
+> ubuntu@fhm7p44s09ksonkmg1n5:~$ docker ps
+CONTAINER ID   IMAGE                    COMMAND                  CREATED       STATUS       PORTS                    NAMES
+d1503e15b22e   vladis7love/app_js       "docker-entrypoint.s…"   1 hours ago   Up 1 hours   0.0.0.0:8080->8080/tcp   js_webapp
+f29adb752697   vladis7love/app_python   "python -m flask run…"   1 hours ago   Up 1 hours   0.0.0.0:5000->5000/tcp   python_webapp
+
+> ubuntu@fhm7p44s09ksonkmg1n5:~$ curl http://localhost:5000
+<h1>Current Time in Moscow: 2025-02-14 15:37:33</h1>
 ```
