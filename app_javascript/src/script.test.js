@@ -9,7 +9,7 @@ const fs = require("fs");
 const path = require("path");
 const {JSDOM} = require("jsdom");
 
-const html = fs.readFileSync(path.resolve(__dirname, "index.html"), "utf8");
+const html = fs.readFileSync(path.resolve(__dirname, "./public/index.html"), "utf8");
 let document, window, timerDisplay, startButton, minutesInput, secondsInput;
 
 beforeEach(() => {
@@ -36,7 +36,7 @@ beforeEach(() => {
     secondsInput = document.getElementById("seconds");
 
     const scriptEl = document.createElement("script");
-    scriptEl.textContent = fs.readFileSync(path.resolve(__dirname, "script.js"), "utf8");
+    scriptEl.textContent = fs.readFileSync(path.resolve(__dirname, "./public/script.js"), "utf8");
     document.body.appendChild(scriptEl);
 });
 

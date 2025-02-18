@@ -8,6 +8,14 @@ const secondsInput = document.getElementById("seconds");
 startButton.addEventListener("click", startTimer);
 resetButton.addEventListener("click", resetTimer);
 
+function sendMetric(eventType) {
+  fetch("/metrics", {
+    method: "POST",
+    body: JSON.stringify({ event: eventType }),
+    headers: { "Content-Type": "application/json" }
+  }).catch(err => console.error("Failed to send metric:", err));
+}
+
 function startTimer() {
   const minutes = parseInt(minutesInput.value) || 0;
   const seconds = parseInt(secondsInput.value) || 0;
@@ -19,6 +27,7 @@ function startTimer() {
   }
 
   clearInterval(countdown);
+  sendMetric("start_timer");
 
   countdown = setInterval(() => {
     const mins = Math.floor(totalTime / 60);
@@ -28,6 +37,7 @@ function startTimer() {
     if (totalTime <= 0) {
       clearInterval(countdown);
       alert("Time is up!");
+      sendMetric("timer_finished");
     }
 
     totalTime--;
@@ -39,4 +49,5 @@ function resetTimer() {
   timerDisplay.textContent = "00:00";
   minutesInput.value = "";
   secondsInput.value = "";
+  sendMetric("reset_timer");
 }

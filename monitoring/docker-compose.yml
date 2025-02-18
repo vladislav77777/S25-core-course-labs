@@ -2,13 +2,44 @@ version: "3.8"
 
 networks:
   monitoring:
+    driver: bridge
 
 volumes:
   loki_data:
 
 services:
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    networks:
+      - monitoring
+    ports:
+      - 9090:9090
+    depends_on:
+      loki:
+        condition: service_started
+      js_app:
+        condition: service_started
+      python_app:
+        condition: service_started
+    deploy:
+      resources:
+        limits:
+          memory: 50M
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 2
+    healthcheck:
+      test: ["CMD", "pgrep", "prometheus"]
+      start_period: 5s
+      retries: 3
+      timeout: 5s
+
   loki:
-    image: grafana/loki:3.4.0
+    image: grafana/loki:latest
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
@@ -16,9 +47,23 @@ services:
       - loki_data:/loki
     networks:
       - monitoring
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 2
+    healthcheck:
+      test: ["CMD", "pgrep", "loki"]
+      start_period: 5s
+      retries: 3
+      timeout: 5s
 
   promtail:
-    image: grafana/promtail:3.4.0
+    image: grafana/promtail:latest
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/log:/var/log
@@ -26,6 +71,20 @@ services:
     command: -config.file=/etc/promtail/config.yaml
     networks:
       - monitoring
+    depends_on:
+      loki:
+        condition: service_started
+    deploy:
+      resources:
+        limits:
+          memory: 50M
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 2
+    healthcheck:
+      disable: true
 
   grafana:
     image: grafana/grafana:latest
@@ -52,10 +111,35 @@ services:
           isDefault: true
           version: 0
           editable: false
+        - name: Prometheus
+          type: prometheus
+          basicAuth: false
+          url: http://prometheus:9090
+          version: 0
+          editable: false
         EOF
         /run.sh
     networks:
       - monitoring
+    depends_on:
+      loki:
+        condition: service_started
+      promtail:
+        condition: service_started
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 2
+    healthcheck:
+      test: ["CMD", "pgrep", "grafana"]
+      start_period: 5s
+      retries: 3
+      timeout: 5s
 
   python_app:
     image: vladis7love/app_python:latest
@@ -63,6 +147,20 @@ services:
       - "8081:5000"
     networks:
       - monitoring
+    deploy:
+      resources:
+        limits:
+          memory: 50M
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 2
+    healthcheck:
+      test: "curl -f http://localhost:5000 || exit 1"
+      retries: 3
+      start_period: 5s
+      timeout: 5s
 
   js_app:
     image: vladis7love/app_js:latest
@@ -70,3 +168,17 @@ services:
       - "8082:8080"
     networks:
       - monitoring
+    deploy:
+      resources:
+        limits:
+          memory: 50M
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 2
+    healthcheck:
+      test: "curl -f http://localhost:8080 || exit 1"
+      retries: 3
+      start_period: 5s
+      timeout: 5s
