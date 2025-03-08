@@ -10,6 +10,8 @@ This web application is a simple countdown timer built using HTML, CSS, and Java
 - Displays the countdown in a clean and readable format.
 - Alerts when the timer reaches zero.
 - Reset functionality to clear the countdown.
+- `/visits` endpoint counter, which save number of visits in the visits.txt, and also docker-compose.yml contains volume `js_app_visits_data` added to store visits file
+
 
 ## Frameworks and Technologies
 

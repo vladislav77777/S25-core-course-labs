@@ -10,6 +10,7 @@ service that provides meaningful real-time information in a lightweight and user
 
 - **Dynamic Functionality:** The application performs a specific task - displaying real-time data.
 - **Scalable and Portable:** Containerized using Docker for easy deployment and scalability.
+- **Visits Monitoring:** `/visits` endpoint counter, which save number of visits in the visits.txt, and also docker-compose.yml contains volume `python_app_visits_data` added to store visits file
 
 ## Frameworks and Technologies
 

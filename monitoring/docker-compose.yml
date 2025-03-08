@@ -161,6 +161,8 @@ services:
       retries: 3
       start_period: 5s
       timeout: 5s
+    volumes:
+      - ./python_app_visits_data:/app/data
 
   js_app:
     image: vladis7love/app_js:latest
@@ -182,3 +184,5 @@ services:
       retries: 3
       start_period: 5s
       timeout: 5s
+    volumes:
+      - ./js_app_visits_data:/usr/share/app/data
