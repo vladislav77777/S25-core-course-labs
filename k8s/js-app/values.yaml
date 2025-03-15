@@ -9,7 +9,7 @@ replicaCount: 3
 image:
   repository: vladis7love/app_js
   # This sets the pull policy for images.
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
@@ -111,10 +111,9 @@ volumes:
 
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts:
-#  - name: config-volume
-#    mountPath: "/data/config.json"
-#    subPath: "config.json"
-#    readOnly: true
+  - name: js-app-visits-data-dev
+    mountPath: /app/data
+
 
 nodeSelector: {}
 
@@ -127,3 +126,9 @@ env:
 
 config:
   path: "files/config.json"
+
+volumeClaimTemplates:
+  name: js-app-visits-data-dev
+  storage: 512Mi
+
+podManagementPolicy: Parallel

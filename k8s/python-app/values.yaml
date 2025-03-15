@@ -3,13 +3,13 @@
 # Declare variables to be passed into your templates.
 
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
-replicaCount: 5
+replicaCount: 4
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
   repository: vladis7love/app_python
   # This sets the pull policy for images.
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
@@ -115,10 +115,9 @@ volumes:
 
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts:
-#  - name: config-volume
-#    mountPath: "/data/config.json"
-#    subPath: "config.json"
-#    readOnly: true
+  - name: python-app-visits-data-dev
+    mountPath: /data
+
 
 nodeSelector: {}
 
@@ -126,9 +125,15 @@ tolerations: []
 
 affinity: {}
 
-PASSWORD: "supersecurepassword"
+volumeClaimTemplates:
+  name: python-app-visits-data-dev
+  storage: 128Mi
+  accessModes: ["ReadWriteOnce"]
+
+podManagementPolicy: Parallel
+
 env:
-  ENV: default
+  ENVIRONMENT: stage
 
 config:
   path: "files/config.json"
